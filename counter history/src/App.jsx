@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -6,11 +6,18 @@ function App() {
   const [history, setHistory] = useState([]);
 
   const handleIncrementDecrement = (operation) => {
-    setHistory([...history, count]);
     setCount(
       operation === "add" ? count + 1 : operation === "sub" ? count - 1 : 0
     );
   };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setHistory((prev) => [...prev, count]);
+    }, 1000);
+
+    return () => clearTimeout(handler); // Cancels the push if counter changes again quickly
+  }, [count]);
 
   return (
     <>
@@ -43,11 +50,9 @@ function App() {
         <div className="history_section">
           <h2>History</h2>
           <ul>
-            {history
-              .sort((a, b) => b - a)
-              .map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
+            {history.toReversed().map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
           </ul>
         </div>
       </div>
